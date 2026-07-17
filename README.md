@@ -157,3 +157,5 @@ Optional helpers:
 - Harness validates tool/state correctness; barge-in / ASR noise need live listening  
 - ALL CAPS names are normalized for speech via `display_name` / `natural_name` - TTS still depends on the chosen voice model  
 - Same-day “earliest” depends on seed schedules and existing bookings at eval time  
+### Demo 
+- You can hear the recordings from demo directory
