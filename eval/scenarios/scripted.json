@@ -1,0 +1,417 @@
+{
+  "scenarios": [
+    {
+      "id": "en_around_1pm",
+      "language": "en",
+      "title": "Underspecified time - around 1 on a dated day",
+      "phone": "9123456780",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Hi, do you have anything on the 13th around 1?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call",
+            "check_availability"
+          ],
+          "must_not_reask": []
+        },
+        {
+          "role": "user",
+          "text": "Physiotherapy at Gurugram is fine. My name is Kabir Mehta."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "ensure_patient",
+            "check_availability"
+          ],
+          "booking_progress": true
+        },
+        {
+          "role": "user",
+          "text": "Yes, book the first one you offered."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "book_appointment"
+          ],
+          "done": true
+        }
+      ],
+      "assertions": {
+        "availability_uses_around_time": true,
+        "name_captured_before_book": true,
+        "max_redundant_questions": 0
+      }
+    },
+    {
+      "id": "hi_mon_wed",
+      "language": "hi",
+      "title": "Hindi - Mondays and Wednesdays",
+      "phone": "9123456781",
+      "turns": [
+        {
+          "role": "user",
+          "text": "नमस्ते, मुझे सोमवार या बुधवार को अपॉइंटमेंट चाहिए।"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call",
+            "check_availability"
+          ]
+        },
+        {
+          "role": "user",
+          "text": "राजौरी गार्डन, फिजियोथेरेपी। मेरा नाम अंजलि गुप्ता है।"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "ensure_patient"
+          ]
+        },
+        {
+          "role": "user",
+          "text": "हाँ, वही स्लॉट बुक कर दीजिए।"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "book_appointment"
+          ],
+          "done": true
+        }
+      ],
+      "assertions": {
+        "preferred_weekdays": [
+          "monday",
+          "wednesday"
+        ],
+        "branch_code": "rajouri_garden",
+        "language_pure_hi_agent_turns": true
+      }
+    },
+    {
+      "id": "en_after_work",
+      "language": "en",
+      "title": "Afternoon after work around 4:30",
+      "phone": "9123456782",
+      "turns": [
+        {
+          "role": "user",
+          "text": "In the afternoon after I get off work, around 4:30 - anything this week?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ]
+        },
+        {
+          "role": "user",
+          "text": "Gurugram spine if possible. I'm Vikram Joshi."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ]
+        },
+        {
+          "role": "user",
+          "text": "Book it."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "book_appointment"
+          ],
+          "done": true
+        }
+      ],
+      "assertions": {
+        "around_or_after_1630": true
+      }
+    },
+    {
+      "id": "en_thursday_morning",
+      "language": "en",
+      "title": "Any Thursday morning",
+      "phone": "9123456783",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Any Thursday morning is great for physio."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ]
+        },
+        {
+          "role": "user",
+          "text": "Either branch. Name is Sara Ali."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "book_appointment"
+          ],
+          "optional_until_slot_chosen": true
+        }
+      ]
+    },
+    {
+      "id": "en_returning_patient",
+      "language": "en",
+      "title": "Returning patient recognized",
+      "phone": "9876543210",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Hi, I need to check my appointment."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call"
+          ],
+          "must_recognize_returning": true
+        },
+        {
+          "role": "user",
+          "text": "Yes I'm Priya Sharma - can we move it?"
+        },
+        {
+          "role": "agent_expect",
+          "must_not_reask": [
+            "phone",
+            "are you a new patient"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en_outbound_callback",
+      "language": "en",
+      "title": "Missed outbound then callback",
+      "phone": "9876501234",
+      "setup": {
+        "missed_outbound": {
+          "purpose": "confirm_appointment",
+          "payload": {
+            "appointment_hint": "follow-up confirmation",
+            "offered_slot": "next Tuesday 10:00"
+          }
+        }
+      },
+      "turns": [
+        {
+          "role": "user",
+          "text": "Hey, I missed a call from you guys."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call"
+          ],
+          "resume_mode": "outbound_callback"
+        }
+      ]
+    },
+    {
+      "id": "en_stale_availability",
+      "language": "en",
+      "title": "Must re-fetch availability when preference changes",
+      "phone": "9123456784",
+      "turns": [
+        {
+          "role": "user",
+          "text": "What do you have tomorrow morning at Rajouri Garden?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ],
+          "tag": "avail1"
+        },
+        {
+          "role": "user",
+          "text": "Actually, what about Thursday afternoon instead?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ],
+          "tag": "avail2",
+          "must_be_fresh_vs": "avail1"
+        }
+      ]
+    },
+    {
+      "id": "en_earliest_cross_branch",
+      "language": "en",
+      "title": "Earliest same-day across both branches",
+      "phone": "9123456785",
+      "turns": [
+        {
+          "role": "user",
+          "text": "What's the earliest slot you have today?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ],
+          "earliest_cross_branch": true
+        }
+      ]
+    },
+    {
+      "id": "en_branch_specialty",
+      "language": "en",
+      "title": "Branch-specific specialty triage",
+      "phone": "9123456786",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Do you have spine availability at Gurugram this week?"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ],
+          "branch_code": "gurugram",
+          "specialty_or_dept": "spine"
+        }
+      ]
+    },
+    {
+      "id": "hi_dropped_recovery",
+      "language": "hi",
+      "title": "Dropped call recovery",
+      "phone": "9123456787",
+      "setup": {
+        "simulate_drop": {
+          "context": {
+            "full_name": "Meera Iyer",
+            "branch_code": "gurugram",
+            "intent": "book",
+            "day_part": "morning"
+          },
+          "summary": "Meera wants Gurugram morning slot; not yet booked"
+        }
+      },
+      "turns": [
+        {
+          "role": "user",
+          "text": "हैलो? कॉल कट गई थी।"
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call"
+          ],
+          "resume_mode": "dropped_call_recovery",
+          "must_not_reask": [
+            "name",
+            "branch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en_family_line",
+      "language": "en",
+      "title": "Family phone disambiguation",
+      "phone": "9988776655",
+      "turns": [
+        {
+          "role": "user",
+          "text": "I need an appointment please."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "start_call"
+          ],
+          "needs_disambiguation": true
+        },
+        {
+          "role": "user",
+          "text": "Rohan Kapoor"
+        },
+        {
+          "role": "agent_expect",
+          "must_not_assume_other_family_member": "Neha"
+        }
+      ]
+    },
+    {
+      "id": "en_codeswitch",
+      "language": "mixed",
+      "title": "Mid-sentence code-switch",
+      "phone": "9123456788",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Hi, mujhe kal afternoon mein appointment chahiye at Rajouri Garden."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "check_availability"
+          ],
+          "allow_codeswitch": true
+        }
+      ]
+    },
+    {
+      "id": "en_human_handoff",
+      "language": "en",
+      "title": "Human request creates follow-up, no fake transfer",
+      "phone": "9123456789",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Can I speak to a real person? Also my back pain is getting worse after the last session."
+        },
+        {
+          "role": "agent_expect",
+          "must_call_tools": [
+            "create_follow_up"
+          ],
+          "no_live_transfer_claim": true
+        }
+      ]
+    },
+    {
+      "id": "en_slot_taken_race",
+      "language": "en",
+      "title": "Slot taken between offer and book",
+      "phone": "9123456790",
+      "setup": {
+        "race_book_same_slot": true
+      },
+      "turns": [
+        {
+          "role": "user",
+          "text": "Book me the earliest Gurugram physio tomorrow, I'm Arjun Nair."
+        },
+        {
+          "role": "agent_expect",
+          "handles_conflict_gracefully": true
+        }
+      ]
+    }
+  ]
+}
